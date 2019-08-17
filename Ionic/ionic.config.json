@@ -1,0 +1,7 @@
+{
+  "name": "callToBeers",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}
