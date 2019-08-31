@@ -43,11 +43,10 @@ export class HomePage {
 
   sendNotification() {
     const url = 'https://fcm.googleapis.com/fcm/send';
-    this.getFcmKey();
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
-        'Authorization': 'key=AAAAAyfKrFw:APA91bEtIRek3BldTRF7iEIgIsXVsM00UL3JBzS01wfpxAJAPhdWoazn1ui2hj2Re6DlsuLTbxas4WF-DvJhYV1mI8ReEb4I5ClmdcLA8lqrFuyd4WDWV9vTjJomUKrYY4S3WENCBBal'
+        'Authorization': 'key=ID'
       })
     };
 
@@ -71,6 +70,6 @@ export class HomePage {
   }
 
   getFcmKey() {
-    alert(this.httpClient.get('./local/fcm_key').subscribe(data => data["results"]));
+    alert(this.httpClient.get('./local/fcm_key').subscribe(data => data));
   }
 }
