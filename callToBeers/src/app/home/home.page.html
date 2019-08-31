@@ -25,4 +25,18 @@
   <div *ngIf="!pushes.length" class="empty">
     You have no notifications. Send a new notification to see it in the app.
   </div>
+
+  <div>
+    <ion-button (click) = "subscribeToTopic()">
+      Subscribe to enappd
+    </ion-button>
+
+    <ion-button (click) = "unsubscribeFromTopic()">
+      Unsubscribe to enappd
+    </ion-button>
+
+    <ion-button (click) = "sendNotification()">
+      Send Notificacion
+    </ion-button>
+  </div>
 </ion-content>
