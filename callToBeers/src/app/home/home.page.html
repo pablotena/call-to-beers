@@ -35,8 +35,18 @@
       Unsubscribe to enappd
     </ion-button>
 
-    <ion-button (click) = "sendNotification()">
-      Send Notificacion
-    </ion-button>
+    <ion-row>
+      <ion-col>
+      </ion-col>
+      <ion-col>
+        <ion-button fill="outline" class="beer-btn" (click) = "sendNotification()">
+          <ion-icon name="beer"></ion-icon>
+          Beer time!
+        </ion-button>
+      </ion-col>
+      <ion-col>
+      </ion-col>
+    </ion-row>
+
   </div>
 </ion-content>
