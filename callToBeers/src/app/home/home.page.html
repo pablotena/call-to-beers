@@ -8,33 +8,6 @@
 
 <ion-content>
   <div>
-    <ion-list>
-      <ion-list-header color="medium">
-        Push Notifications
-      </ion-list-header>
-      <ion-item *ngFor="let push of pushes">
-        <ion-label text-wrap>
-          <ion-text color="primary">
-            <h3>{{push.title}}</h3>
-          </ion-text>
-          <p>{{push.body}}</p>
-        </ion-label>
-      </ion-item>
-    </ion-list>
-  </div>
-  <div *ngIf="!pushes.length" class="empty">
-    You have no notifications. Send a new notification to see it in the app.
-  </div>
-
-  <div>
-    <ion-button (click) = "subscribeToTopic()">
-      Subscribe to enappd
-    </ion-button>
-
-    <ion-button (click) = "unsubscribeFromTopic()">
-      Unsubscribe to enappd
-    </ion-button>
-
     <ion-row>
       <ion-col>
       </ion-col>
