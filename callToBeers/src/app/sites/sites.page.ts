@@ -10,7 +10,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 })
 export class SitesPage implements OnInit {
 
-  public items: Array<any>;
+  public items: any;
+  public sitesList: any;
   pushes: any = [];
   
   constructor(private fcm: FCM, public plt: Platform, public httpClient: HttpClient) {
@@ -33,12 +34,15 @@ export class SitesPage implements OnInit {
   }
 
   ngOnInit() {
-    this.items = [
-      { title: 'Jerez' },
-      { title: 'Madrid' },
-      { title: 'Barcelona' },
-      { title: 'Sevilla' }
-    ];
+    this.getListSites();
+  }
+
+  getListSites() {
+    var url = "http://192.168.1.84:8080/getBeerLists";
+
+    this.httpClient.get(url).subscribe(response => {
+      this.items = response;
+    });
   }
 
   subscribeToTopic(item) {

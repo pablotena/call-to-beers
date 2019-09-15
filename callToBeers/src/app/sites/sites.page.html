@@ -8,14 +8,14 @@
 
   <ion-list>
 
-    <ion-list padding *ngFor="let item of items">
+    <ion-list padding *ngFor="let item of items | keyvalue">
         <ion-item>
             <ion-button (click) = "subscribeToTopic(item)">
-                Suscribirse a {{item.title}}
+                Suscribirse a {{item.value}}
             </ion-button>
 
             <ion-button (click) = "unsubscribeFromTopic(item)">
-                Desuscribirse de {{item.title}}
+                Desuscribirse de {{item.value}}
             </ion-button>
         </ion-item>
     </ion-list>
