@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FCM } from '@ionic-native/fcm/ngx';
 import { Platform } from '@ionic/angular';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { StorageService } from '../storage.service';
 
 @Component({
   selector: 'app-sites',
@@ -14,7 +15,7 @@ export class SitesPage implements OnInit {
   public sitesList: any;
   pushes: any = [];
   
-  constructor(private fcm: FCM, public plt: Platform, public httpClient: HttpClient) {
+  constructor(private storageService: StorageService, private fcm: FCM, public plt: Platform, public httpClient: HttpClient) {
     this.plt.ready()
       .then(() => {
         this.fcm.onNotification().subscribe(data => {
@@ -38,16 +39,52 @@ export class SitesPage implements OnInit {
   }
 
   getListSites() {
-    var url = "http://192.168.1.84:8080/getBeerLists";
-
+    var url = "http://calltobeer:8080/getBeerLists";
+    
     this.httpClient.get(url).subscribe(response => {
       this.items = response;
+
+      Object.entries(this.items).forEach(([key, value]) => {
+        this.storageService.get("suscripcion" + key).then(result => {
+          if (result != null) {
+            document.getElementById("subButton" + result).innerHTML = "Desuscribirse de " + this.items[result];
+          }
+        }).catch(e => {
+          console.log("error");
+        });    
+      });
+
+    });
+  }
+
+  subunsubfunction(item) {
+    this.storageService.get("suscripcion" + item.key).then(result => {
+      if (result != null) {
+        this.unsubscribeFromTopic(item);
+      }
+      else {
+        this.subscribeToTopic(item);
+      }
+    }).catch(e => {
+      console.log("error");
     });
   }
 
   subscribeToTopic(item) {
-    alert("Te has suscrito a " + item.title);
-    this.fcm.subscribeToTopic('enappd');
+    
+    this.storageService.set("suscripcion" + item.key, item.key).then(result => {
+
+      console.log("Suscripción guardada");
+      document.getElementById("subButton" + item.key).innerHTML = "Desuscribirse de " + item.value;
+      document.getElementById("subButton" + item.key).style.background = "red";
+
+      this.fcm.subscribeToTopic(item.key);
+      alert("Te has suscrito a " + item.value);
+
+    }).catch(e => {
+      console.log("error: " + e);
+    });
+      
   }
 
   getToken() {
@@ -58,8 +95,12 @@ export class SitesPage implements OnInit {
   }
 
   unsubscribeFromTopic(item) {
-    alert("Te has desuscrito de " + item.title);
-    this.fcm.unsubscribeFromTopic('enappd');
+
+    this.storageService.remove("suscripcion" + item.key);
+    document.getElementById("subButton" + item.key).innerHTML = "Suscribirse a " + item.value;
+    alert("Te has desuscrito de " + item.value);
+
+    this.fcm.unsubscribeFromTopic(item.key);
   }
 
 }
