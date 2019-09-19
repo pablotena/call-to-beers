@@ -31,7 +31,7 @@ export class HomePage {
       "data": {
           "landing_page": "home"
       },
-      "to": "/topics/enappd",
+      "to": "/topics/1",
       "priority": "high",
       "restricted_package_name": ""
     };

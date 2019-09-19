@@ -39,7 +39,7 @@ export class SitesPage implements OnInit {
   }
 
   getListSites() {
-    var url = "http://calltobeer:8080/getBeerLists";
+    var url = "http://192.168.1.84:8080/getBeerLists";
     
     this.httpClient.get(url).subscribe(response => {
       this.items = response;
