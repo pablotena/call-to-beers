@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { StorageService } from '../storage.service';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -9,33 +11,39 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 })
 export class HomePage {
 
-  constructor(public httpClient: HttpClient) {}
+  constructor(public httpClient: HttpClient, public alertController: AlertController, private storageService: StorageService) {}
 
   sendNotification() {
-    const url = 'https://fcm.googleapis.com/fcm/send';
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Authorization': 'key=ID'
-      })
-    };
 
-    var notification = {
-      "notification": {
-          "title": "Ionic 4 Notification",
-          "body": "This notification sent from POSTMAN using Firebase HTTP protocol",
-          "sound": "default",
-          "click_action": "FCM_PLUGIN_ACTIVITY",
-          "icon": "fcm_push_icon"
-      },
-      "data": {
-          "landing_page": "home"
-      },
-      "to": "/topics/1",
-      "priority": "high",
-      "restricted_package_name": ""
-    };
+    this.storageService.get("suscripcion").then(result => {
+      if (result != null) {
+        const url = 'http://192.168.1.84:8080/sendNotification';
+        const httpOptions = {
+          headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+          })
+        };
+    
+        var body = {
+          'topicId' : result
+        };
 
-    this.httpClient.post(url, notification, httpOptions).subscribe();
+        this.httpClient.post(url, body, httpOptions).subscribe();
+
+        this.presentAlert();
+      }
+    }).catch(e => {
+      console.log("error");
+    });    
+  }
+
+  async presentAlert() {
+    const alert = await this.alertController.create({
+      header: 'Notificación enviada',
+      message: '¡Se ha enviado la notificación!',
+      buttons: ['Perfecto']
+    });
+
+    await alert.present();
   }
 }

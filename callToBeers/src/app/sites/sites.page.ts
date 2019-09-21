@@ -3,6 +3,7 @@ import { FCM } from '@ionic-native/fcm/ngx';
 import { Platform } from '@ionic/angular';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { StorageService } from '../storage.service';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-sites',
@@ -14,15 +15,19 @@ export class SitesPage implements OnInit {
   public items: any;
   public sitesList: any;
   pushes: any = [];
+  subText = "Suscribirse a ";
+  unSubText = "Desuscribirse de ";
+  subscribedText = "Te has suscrito a ";
+  unSubscribedText = "Te has desuscrito de ";
   
-  constructor(private storageService: StorageService, private fcm: FCM, public plt: Platform, public httpClient: HttpClient) {
+  constructor(public alertController: AlertController,  public httpClient: HttpClient, private storageService: StorageService, private fcm: FCM, public plt: Platform) {
     this.plt.ready()
       .then(() => {
         this.fcm.onNotification().subscribe(data => {
           if (data.wasTapped) {
             console.log("Received in background");
           } else {
-            alert("Received in foreground");
+            this.presentAlert('Notificación recibida', 'Acabas de recibir una notificación de tu suscripción');
             console.log("Received in foreground");
           };
         });
@@ -44,23 +49,35 @@ export class SitesPage implements OnInit {
     this.httpClient.get(url).subscribe(response => {
       this.items = response;
 
-      Object.entries(this.items).forEach(([key, value]) => {
-        this.storageService.get("suscripcion" + key).then(result => {
-          if (result != null) {
-            document.getElementById("subButton" + result).innerHTML = "Desuscribirse de " + this.items[result];
-          }
-        }).catch(e => {
-          console.log("error");
-        });    
-      });
+      this.storageService.get("suscripcion").then(result => {
+        if (result != null) {
+          this.setTextToElementById("subButton" + result, this.unSubText + this.items[result]);
+        }
+      }).catch(e => {
+        console.log("error");
+      });    
 
     });
   }
 
   subunsubfunction(item) {
-    this.storageService.get("suscripcion" + item.key).then(result => {
+    this.storageService.get("suscripcion").then(result => {
       if (result != null) {
-        this.unsubscribeFromTopic(item);
+
+        if (result != item.key) {
+
+          var oldItem = {
+            'key' : result,
+            'value' : this.items[result]
+          };
+
+          // Sub to the new one.
+          this.unsubscribeFromTopic(oldItem);
+          this.subscribeToTopic(item);
+        }
+        else {
+          this.unsubscribeFromTopic(item);
+        }
       }
       else {
         this.subscribeToTopic(item);
@@ -72,14 +89,13 @@ export class SitesPage implements OnInit {
 
   subscribeToTopic(item) {
     
-    this.storageService.set("suscripcion" + item.key, item.key).then(result => {
+    this.storageService.set("suscripcion", item.key).then(result => {
 
       console.log("Suscripción guardada");
-      document.getElementById("subButton" + item.key).innerHTML = "Desuscribirse de " + item.value;
-      document.getElementById("subButton" + item.key).style.background = "red";
+      this.setTextToElementById("subButton" + item.key, this.unSubText + item.value);
 
       this.fcm.subscribeToTopic(item.key);
-      alert("Te has suscrito a " + item.value);
+      this.presentAlert('Operación realizada', this.subscribedText + item.value);
 
     }).catch(e => {
       console.log("error: " + e);
@@ -96,11 +112,30 @@ export class SitesPage implements OnInit {
 
   unsubscribeFromTopic(item) {
 
-    this.storageService.remove("suscripcion" + item.key);
-    document.getElementById("subButton" + item.key).innerHTML = "Suscribirse a " + item.value;
-    alert("Te has desuscrito de " + item.value);
+    this.storageService.remove("suscripcion");
+    this.setTextToElementById("subButton" + item.key, this.subText + item.value);
 
     this.fcm.unsubscribeFromTopic(item.key);
+    this.presentAlert('Operación realizada' ,this.unSubscribedText + item.value);
   }
+
+  // ****************************************
+  // Generic functions
+  // ****************************************
+
+  setTextToElementById(id, text) {
+    document.getElementById(id).innerHTML = text;
+  }
+
+  async presentAlert(title, text) {
+    const alert = await this.alertController.create({
+      header: title,
+      message: text,
+      buttons: ['Vale']
+    });
+
+    await alert.present();
+  }
+
 
 }
