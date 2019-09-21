@@ -9,28 +9,20 @@ public class NotificationRequest implements Serializable {
 	 */
 	private static final long serialVersionUID = 7020524548307009435L;
 	
-	private String mobileID;
-	private Integer listID;
+	private Integer topicId;
 
-	public String getMobileID() {
-		return mobileID;
+
+	public Integer getTopicId() {
+		return topicId;
 	}
 
-	public void setMobileID(String mobileID) {
-		this.mobileID = mobileID;
-	}
-
-	public Integer getListID() {
-		return listID;
-	}
-
-	public void setListID(Integer listID) {
-		this.listID = listID;
+	public void setetTopicId(Integer topicId) {
+		this.topicId = topicId;
 	}
 
 	@Override
 	public String toString() {
-		return String.format("NotificationRequest [mobileID=%s, listID=%s]", mobileID, listID);
+		return String.format("NotificationRequest [topicId=%s]", topicId);
 	}
 
 }
